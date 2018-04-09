@@ -9,7 +9,7 @@ defmodule SigrokViewer.Application do
     # Define workers and child supervisors to be supervised
     children = [
       # Start the Ecto repository
-      supervisor(SigrokViewer.Repo, []),
+      # supervisor(SigrokViewer.Repo, []),
       # Start the endpoint when the application starts
       supervisor(SigrokViewerWeb.Endpoint, []),
       # Start your own worker by calling: SigrokViewer.Worker.start_link(arg1, arg2, arg3)
