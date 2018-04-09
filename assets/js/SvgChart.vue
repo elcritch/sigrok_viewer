@@ -19,19 +19,32 @@
             v-bind:key="row_idx"
             :id="`data_row${row_idx}`">
 
-            <rect 
-              v-for="(_idx, i) in idxs.count"
+            <path 
+              v-for="(_idx, i) in idxs.count "
               v-bind:key="(idxs.min + i) + row_idx / 100 "
               :id="(idxs.min + i) + row_idx / 100 "
-              v-bind:x="x_idx_pos(i) "
-              v-bind:width="1.01"
-              v-bind:y="y_idx_pos(row_idx) - signal_height*elem(row_idx,idxs.min+i) "
-              v-bind:height="signal_height*elem(row_idx,idxs.min+i) + 0.5"
 
-              :fill="colors[row_idx-1]"
-              class="data-block"
+              v-bind:d="path(row_idx, i)"
+
+              stroke="black"
+              :stroke-width="0.3"
+              fill="none"
               >
-            </rect>
+            </path>
+
+            <!-- <rect  -->
+            <!--   v-for="(_idx, i) in idxs.count" -->
+            <!--   v-bind:key="(idxs.min + i) + row_idx / 100 " -->
+            <!--   :id="(idxs.min + i) + row_idx / 100 " -->
+            <!--   v-bind:x="x_idx_pos(i) " -->
+            <!--   v-bind:width="1.01" -->
+            <!--   v-bind:y="y_idx_pos(row_idx) - signal_height*elem(row_idx,idxs.min+i) " -->
+            <!--   v-bind:height="signal_height*elem(row_idx,idxs.min+i) + 0.5" -->
+
+            <!--   :fill="colors[row_idx-1]" -->
+            <!--   class="data-block" -->
+            <!--   > -->
+            <!-- </rect> -->
 
 
             <!--
@@ -68,6 +81,7 @@ export default {
         return {
             strokeColor: "#1c2438",
             color_model: '',
+            factor: 100,
         };
     },
     mounted: function() {
@@ -80,6 +94,9 @@ export default {
     
     computed: {
         
+        indexed_cols: function() {
+            return this.data_info.ncols / 10
+        },
         data_info: function() {
             if (this.data === null || this.data.length == 0) return { ncols: 0, nrows: 0 }
             
@@ -95,14 +112,14 @@ export default {
         colors: function() {
             let def_colors = {}
             for (var i = 0; i < this.data_info.nrows; i++) {
-               def_colors[i] = '#1c2438'
+                def_colors[i] = '#1c2438'
             }
-                
+            
             let cl = Object.assign(def_colors, this.data_colors)
             console.log("update colors:", cl)
             return cl
         },
-
+        
         port: function() {
             let width = this.data_info.ncols
             let height = 10 * (this.data_info.nrows + 2)
@@ -124,18 +141,39 @@ export default {
         
         idxs: function() {
             let idx_width = Math.ceil(this.port.x_size/2)
-            let idx_pos = Math.floor(this.port.x_pos) 
+            // let idx_pos = Math.floor(this.port.x_pos)
+            let idx_pos = Math.floor(this.port.x_pos / (idx_width)) * idx_width
             let idx_max = this.data_info.ncols - 1
             
             let min = Math.max(idx_pos - idx_width, 0)
-            let max = Math.min(idx_max, idx_pos + 2*idx_width + 1)
-            let count = max - min
+            let max = Math.min(idx_max, idx_pos + 3*idx_width)
+
+            let count = Math.floor( ( max - min ) / this.factor)
             
-            return { min, max, count, idx_max}
+            let idxs = { min, max, count, idx_max}
+
+            // console.log("idxes:", idxs)
+            return idxs;
         },
         
     },
     methods: {
+        path: function(row, col_idx) {
+            let col = col_idx * this.factor
+            let xpos = this.idxs.min + col + 1
+            let ypos = 10*row+5;
+            
+            // let elem1 = 3*this.elem(row,this.idxs.min+col);
+            
+            let path = ` M ${xpos} ${ypos} `
+            var prev = 0;
+            for (var n = 0; n < this.factor + 1; n++) {
+                let elem = ypos + 3*this.elem(row,this.idxs.min+col+n)
+                path += ` l 1 0 V ${elem} `
+            }
+
+            return path
+        },
         elem: function(row, col) {
             return (this.data[row-1][Math.floor(col/8)] >>> (col %8)) & 1;
         },
