@@ -4,8 +4,8 @@
     
     <div v-on:wheel.prevent="move($event)">
 
-      <svg width="100%" height="50vh"
-          v-bind:viewBox="`${port.x_pos} ${port.y_pos} ${port.x_size} ${port.y_size}`" preserveAspectRatio="none">
+      <svg width="100%" height="50%"
+          v-bind:viewBox="`${port.x_pos} ${port.y_pos} ${port.x_size} ${port.y_size}`" >
 
         <rect :x="port.x_min - 0.045*port.width"
               :y="port.y_min"
@@ -122,7 +122,6 @@ export default {
         
         port: function() {
             let width = this.data_info.ncols
-            let height = 10 * (this.data_info.nrows + 2)
             
             let x_min = 0.0
             let x_size = this.width_count // * this.data_info.ncols
@@ -132,7 +131,8 @@ export default {
             
             let y_min = 0.0
             let y_pos = 0.0
-            let y_size = height
+            let y_size = x_size/2
+            let height = y_size / (this.data_info.nrows + 2)
             
             return {
                 width, height, x_size, x_pos, y_size, y_pos, y_min, x_min, x_delta,
@@ -147,11 +147,11 @@ export default {
             
             let min = Math.max(idx_pos - idx_width, 0)
             let max = Math.min(idx_max, idx_pos + 3*idx_width)
-
+            
             let count = Math.floor( ( max - min ) / this.factor)
             
             let idxs = { min, max, count, idx_max}
-
+            
             // console.log("idxes:", idxs)
             return idxs;
         },
@@ -161,14 +161,14 @@ export default {
         path: function(row, col_idx) {
             let col = col_idx * this.factor
             let xpos = this.idxs.min + col + 1
-            let ypos = 10*row+5;
+            let ypos = (row+1) * this.port.height
             
             // let elem1 = 3*this.elem(row,this.idxs.min+col);
             
             let path = ` M ${xpos} ${ypos} `
             var prev = 0;
             for (var n = 0; n < this.factor + 1; n++) {
-                let elem = ypos + 3*this.elem(row,this.idxs.min+col+n)
+                let elem = ypos + this.port.height/3*this.elem(row,this.idxs.min+col+n)
                 path += ` l 1 0 V ${elem} `
             }
 
