@@ -20,7 +20,11 @@ exports.config = {
       // }
     },
     stylesheets: {
-      joinTo: "css/app.css"
+        joinTo: "css/app.css",
+        // joinTo: {
+            // "css/app.css": /^css/,
+            // "css/vendor.css": /^(?!css)/
+        // }
     },
     templates: {
       joinTo: "js/app.js"
@@ -47,6 +51,15 @@ exports.config = {
     babel: {
       // Do not use ES6 compiler in vendor code
       ignore: [/vendor/]
+    },
+    vue: {
+      extractCSS: true,
+        out: '../priv/static/css/components.css'
+    },
+    copycat:{
+        "css/fonts" : ["node_modules/iview/dist/styles/fonts/"],
+        verbose : true, 
+        onlyChanged: true 
     }
   },
 
@@ -55,8 +68,21 @@ exports.config = {
       "js/app.js": ["js/app"]
     }
   },
-
   npm: {
-    enabled: true
+      enabled: true,
+      whitelist: ["phoenix", "phoenix_html", "vue", "iview"],
+      globals: {
+          Vue: "vue/dist/vue.common.js",
+          iView: 'iview',
+          d3: 'd3'
+      },
+      styles: {
+          iview: ["dist/styles/iview.css"],
+      },
+
+
+      // aliases: {
+          // vue: 'vue/dist/vue.common.js'
+      // }
   }
 };
