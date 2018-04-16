@@ -196,7 +196,7 @@ export default {
 
             // console.log("xpos_frac:move:", xpos_frac)
             this.$emit("update:xpos_frac", xpos_frac)
-      },
+        },
     }
   }
 </script>
