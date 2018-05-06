@@ -10,13 +10,16 @@ config :sigrok_viewer,
   ecto_repos: [SigrokViewer.Repo],
   generators: [binary_id: true]
 
+config :sigrok_viewer,
+  ip: {0, 0, 0, 0},
+  port: 5555
+
 # Configures the endpoint
 config :sigrok_viewer, SigrokViewerWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "FFIY/g9W3Zx2TN4eLNDyHsTXFSZFKFEjtDh+PBy2DtNpDMpU22lMkTZjzXODJwqI",
   render_errors: [view: SigrokViewerWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: SigrokViewer.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: SigrokViewer.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -25,4 +28,4 @@ config :logger, :console,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
